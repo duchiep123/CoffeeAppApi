@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Coffee_App.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/coffees")]
     [ApiController]
     public class CoffeeController : ControllerBase
     {
