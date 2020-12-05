@@ -38,7 +38,6 @@ namespace Coffee_App.Controllers
                 IEnumerable<ProductSize> productSizes = _productSizeRepository.GetAll();
                 string json = JsonConvert.SerializeObject(new { Coupons = coupons, Products = products, Sizes = productSizes });
                 return Ok(json);
-
             }
             catch (Exception e)
             {

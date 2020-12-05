@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Coffee_App.Models
 {
@@ -15,6 +17,8 @@ namespace Coffee_App.Models
         public int? PriceOfSizeM { get; set; }
         public int? PriceOfSizeL { get; set; }
 
+        [JsonIgnore]
+        [IgnoreDataMember]
         public virtual ICollection<Product> Product { get; set; }
     }
 }
