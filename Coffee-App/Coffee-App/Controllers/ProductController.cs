@@ -34,9 +34,8 @@ namespace Coffee_App.Controllers
             try
             {
                 IEnumerable<Product> products = _productRepository.GetAll();
-                IEnumerable<Coupon> coupons = _couponRepository.GetAll();
                 IEnumerable<ProductSize> productSizes = _productSizeRepository.GetAll();
-                string json = JsonConvert.SerializeObject(new { Coupons = coupons, Products = products, Sizes = productSizes });
+                string json = JsonConvert.SerializeObject(new { Products = products, Sizes = productSizes });
                 return Ok(json);
             }
             catch (Exception e)
