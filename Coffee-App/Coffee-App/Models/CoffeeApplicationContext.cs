@@ -28,7 +28,7 @@ namespace Coffee_App.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=DESKTOP-H65FKUQ\\SQLEXPRESS;Initial Catalog=CoffeeApplication;Persist Security Info=False;User ID=sa;Password=123;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
+                optionsBuilder.UseSqlServer("Server=DESKTOP-H65FKUQ\\SQLEXPRESS,1456;Initial Catalog=CoffeeApplication;Persist Security Info=False;User ID=sa;Password=123;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
             }
         }
 
@@ -238,7 +238,7 @@ namespace Coffee_App.Models
 
                 entity.Property(e => e.Phone)
                     .HasColumnName("phone")
-                    .HasMaxLength(11);
+                    .HasMaxLength(15);
 
                 entity.Property(e => e.ProviderId)
                     .IsRequired()

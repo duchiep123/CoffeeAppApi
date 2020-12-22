@@ -62,16 +62,66 @@ namespace Coffee_App.Controllers
                     }
 
                 }
-                catch (DbUpdateException)
+                catch (DbUpdateException e)
                 {
-                    var response = new ResponseRegisterModel() { Token = null, Status = 1, Error = "This user ID is exsisted." }; // tk da dc tạo 
+                    ResponseRegisterModel response = null;
+                    if (e.InnerException.Message.Contains("duplicate"))
+                    {
+                        response = new ResponseRegisterModel() { Token = null, Status = 1, Error = "This user Id is exsisted." }; // tk da dc tạo 
+                    }
+                    else
+                    {
+                        response = new ResponseRegisterModel() { Token = null, Status = 1, Error = "" + e.InnerException.Message }; // 
+                    }
                     return BadRequest(JsonConvert.SerializeObject(response));
 
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    var response = new ResponseRegisterModel() { Token = null, Status = 2, Error = "Error Server." }; //
+                    var response = new ResponseRegisterModel() { Token = null, Status = 2, Error = "Error Server. " + ex.InnerException.Message }; //
                     return BadRequest(JsonConvert.SerializeObject(response));
+                }
+            }
+            return BadRequest();
+        }
+
+        [HttpPost("update")]
+        public ActionResult UpdateUser(RequestUpdateUser userUpdate)
+        {
+            if (ModelState.IsValid)
+            {
+                User u = _userRepository.Get(userUpdate.UserId);
+                if (u != null)
+                {
+                    u.Fullname = userUpdate.Fullname;
+                    u.Phone = userUpdate.Phone;
+                    u.Image = userUpdate.Image;
+
+                    _userRepository.Update(u.UserId, u);
+                    if (_userRepository.SaveChanges() == 1)
+                    {
+                        return Ok();
+                    }
+
+                }
+            }
+            return BadRequest();
+        }
+
+        [HttpPost("update/address")]
+        public ActionResult UpdateUserAddress(RequestUpdateUser userUpdate)
+        {
+            if (ModelState.IsValid)
+            {
+                User u = _userRepository.Get(userUpdate.UserId);
+                if (u != null)
+                {
+                    u.Address = userUpdate.address;
+                    _userRepository.Update(u.UserId, u);
+                    if (_userRepository.SaveChanges() == 1)
+                    {
+                        return Ok();
+                    }
                 }
             }
             return BadRequest();
