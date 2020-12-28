@@ -37,6 +37,12 @@ namespace Coffee_App.Controllers
             {
                 try
                 {
+                    if (_userRepository.Get(req.UserId) != null)
+                    {
+                        string coffeeToken = token.CreateToken();
+                        var response = new ResponseRegisterModel() { Token = coffeeToken, Status = 0, Error = null }; //
+                        return Ok(JsonConvert.SerializeObject(response));
+                    }
                     User user = new User();
                     user.UserId = req.UserId;
                     user.Fullname = req.Fullname;
@@ -62,20 +68,7 @@ namespace Coffee_App.Controllers
                     }
 
                 }
-                catch (DbUpdateException e)
-                {
-                    ResponseRegisterModel response = null;
-                    if (e.InnerException.Message.Contains("duplicate"))
-                    {
-                        response = new ResponseRegisterModel() { Token = null, Status = 1, Error = "This user Id is exsisted." }; // tk da dc tạo 
-                    }
-                    else
-                    {
-                        response = new ResponseRegisterModel() { Token = null, Status = 1, Error = "" + e.InnerException.Message }; // 
-                    }
-                    return BadRequest(JsonConvert.SerializeObject(response));
 
-                }
                 catch (Exception ex)
                 {
                     var response = new ResponseRegisterModel() { Token = null, Status = 2, Error = "Error Server. " + ex.InnerException.Message }; //
