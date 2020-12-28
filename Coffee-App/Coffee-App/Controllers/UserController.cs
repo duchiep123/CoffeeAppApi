@@ -6,6 +6,7 @@ using Coffee_App.IRepositories;
 using Coffee_App.Models;
 using Coffee_App.RequestModels;
 using Coffee_App.Token;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -66,7 +67,6 @@ namespace Coffee_App.Controllers
                         var response = new ResponseRegisterModel() { Token = coffeeToken, Status = 0, Error = null };
                         return Ok(JsonConvert.SerializeObject(response));
                     }
-
                 }
 
                 catch (Exception ex)
@@ -78,43 +78,57 @@ namespace Coffee_App.Controllers
             return BadRequest();
         }
 
+        [Authorize]
         [HttpPost("update")]
         public ActionResult UpdateUser(RequestUpdateUser userUpdate)
         {
             if (ModelState.IsValid)
             {
-                User u = _userRepository.Get(userUpdate.UserId);
-                if (u != null)
+                try
                 {
-                    u.Fullname = userUpdate.Fullname;
-                    u.Phone = userUpdate.Phone;
-                    u.Image = userUpdate.Image;
-
-                    _userRepository.Update(u.UserId, u);
-                    if (_userRepository.SaveChanges() == 1)
+                    User u = _userRepository.Get(userUpdate.UserId);
+                    if (u != null)
                     {
-                        return Ok();
+                        u.Fullname = userUpdate.Fullname;
+                        u.Phone = userUpdate.Phone;
+                        u.Image = userUpdate.Image;
+                        _userRepository.Update(u);
+                        if (_userRepository.SaveChanges() == 1)
+                        {
+                            return Ok();
+                        }
                     }
-
+                }
+                catch (Exception e)
+                {
+                    return BadRequest(JsonConvert.SerializeObject(new { error = e.InnerException.Message }));
                 }
             }
             return BadRequest();
         }
 
+        [Authorize]
         [HttpPost("update/address")]
         public ActionResult UpdateUserAddress(RequestUpdateUser userUpdate)
         {
             if (ModelState.IsValid)
             {
-                User u = _userRepository.Get(userUpdate.UserId);
-                if (u != null)
+                try
                 {
-                    u.Address = userUpdate.address;
-                    _userRepository.Update(u.UserId, u);
-                    if (_userRepository.SaveChanges() == 1)
+                    User u = _userRepository.Get(userUpdate.UserId);
+                    if (u != null)
                     {
-                        return Ok();
+                        u.Address = userUpdate.address;
+                        _userRepository.Update(u);
+                        if (_userRepository.SaveChanges() == 1)
+                        {
+                            return Ok();
+                        }
                     }
+                }
+                catch (Exception e)
+                {
+                    return BadRequest(JsonConvert.SerializeObject(new { error = e.InnerException.Message }));
                 }
             }
             return BadRequest();

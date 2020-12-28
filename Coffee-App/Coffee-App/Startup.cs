@@ -90,7 +90,10 @@ namespace Coffee_App
             app.UseRouting();
             app.UseCors("CoffeePolicy");
 
+            app.UseAuthentication(); // phai de dong nay truoc dong  app.UseAuthorization();
             app.UseAuthorization();
+            
+
 
             app.UseEndpoints(endpoints =>
             {

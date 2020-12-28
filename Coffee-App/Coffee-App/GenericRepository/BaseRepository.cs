@@ -53,14 +53,11 @@ namespace Coffee_App.GenericRepository
             return _dbContext.SaveChangesAsync();
         }
 
-        public void Update(object key, T items)
+        public void Update(T items)
         {
-            // _dbSet.Update(items);
-            T exist = _dbSet.Find(key);
-            if (exist != null)
-            {
-                _dbContext.Entry(exist).CurrentValues.SetValues(items);
-            }
+            _dbSet.Update(items);
+            // _dbContext.Entry(exist).CurrentValues.SetValues(items);
+
         }
     }
 }

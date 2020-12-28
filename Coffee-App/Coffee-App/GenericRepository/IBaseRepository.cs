@@ -11,7 +11,7 @@ namespace Coffee_App.GenericRepository
         T Get(object id);
         void Add(T t);
         void Delete(object key);
-        void Update(object key, T items);
+        void Update(T items);
         int SaveChanges();
         Task<int> SaveChangesAsync();
 
