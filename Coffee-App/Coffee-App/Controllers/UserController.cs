@@ -79,7 +79,7 @@ namespace Coffee_App.Controllers
         }
 
         [Authorize]
-        [HttpGet("update/id/{id}")]
+        [HttpPut("update/id/{id}")]
         public ActionResult UpdateUser(string id, RequestUpdateUser userUpdate)
         {
             if (ModelState.IsValid)
@@ -108,7 +108,7 @@ namespace Coffee_App.Controllers
         }
 
         [Authorize]
-        [HttpGet("update/address/id/{id}")]
+        [HttpPut("update/address/id/{id}")]
         public ActionResult UpdateUserAddress(string id, RequestUpdateUser userUpdate)
         {
             if (ModelState.IsValid)
