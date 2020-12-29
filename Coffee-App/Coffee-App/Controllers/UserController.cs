@@ -79,14 +79,14 @@ namespace Coffee_App.Controllers
         }
 
         [Authorize]
-        [HttpPost("update")]
-        public ActionResult UpdateUser(RequestUpdateUser userUpdate)
+        [HttpGet("update/id/{id}")]
+        public ActionResult UpdateUser(string id, RequestUpdateUser userUpdate)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    User u = _userRepository.Get(userUpdate.UserId);
+                    User u = _userRepository.Get(id);
                     if (u != null)
                     {
                         u.Fullname = userUpdate.Fullname;
@@ -108,14 +108,14 @@ namespace Coffee_App.Controllers
         }
 
         [Authorize]
-        [HttpPost("update/address")]
-        public ActionResult UpdateUserAddress(RequestUpdateUser userUpdate)
+        [HttpGet("update/address/id/{id}")]
+        public ActionResult UpdateUserAddress(string id, RequestUpdateUser userUpdate)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    User u = _userRepository.Get(userUpdate.UserId);
+                    User u = _userRepository.Get(id);
                     if (u != null)
                     {
                         u.Address = userUpdate.address;
@@ -132,6 +132,36 @@ namespace Coffee_App.Controllers
                 }
             }
             return BadRequest();
+        }
+
+        [Authorize]
+        [HttpGet("id/{id}")]
+        public ActionResult GetInfo(string id)
+        {
+            try
+            {
+                User u = _userRepository.Get(id);
+                if (u != null)
+                {
+                    var responseUser = new
+                    {
+                        UserId = u.UserId,
+                        Fullname = u.Fullname,
+                        Email = u.Email,
+                        Phone = u.Phone,
+                        Address = u.Address,
+                        ProviderId = u.ProviderId,
+                        Image = u.Image
+                    };
+                    string json = JsonConvert.SerializeObject(responseUser);
+                    return Ok(json);
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest(JsonConvert.SerializeObject(new { error = e.InnerException.Message }));
+            }
+            return BadRequest(JsonConvert.SerializeObject(new { message = "This userId is not existed." }));
         }
     }
 }

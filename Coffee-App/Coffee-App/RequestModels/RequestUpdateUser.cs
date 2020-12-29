@@ -8,9 +8,6 @@ namespace Coffee_App.RequestModels
 {
     public class RequestUpdateUser
     {
-        [Required]
-        public string UserId { get; set; }
-
         public string  Fullname { get; set; }
         public string Phone { get; set; }
         public string Image { get; set; }
