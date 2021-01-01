@@ -77,6 +77,11 @@ namespace Coffee_App.Models
             {
                 entity.Property(e => e.OrderId).HasColumnName("orderId");
 
+                entity.Property(e => e.Address)
+                    .IsRequired()
+                    .HasColumnName("address")
+                    .HasMaxLength(150);
+
                 entity.Property(e => e.CouponId)
                     .HasColumnName("couponId")
                     .HasMaxLength(50);
@@ -85,9 +90,19 @@ namespace Coffee_App.Models
                     .HasColumnName("orderTime")
                     .HasColumnType("datetime");
 
+                entity.Property(e => e.Phone)
+                    .IsRequired()
+                    .HasColumnName("phone")
+                    .HasMaxLength(15);
+
                 entity.Property(e => e.ReceiveTime)
                     .HasColumnName("receiveTime")
                     .HasColumnType("datetime");
+
+                entity.Property(e => e.ReceiverName)
+                    .IsRequired()
+                    .HasColumnName("receiverName")
+                    .HasMaxLength(60);
 
                 entity.Property(e => e.Status).HasColumnName("status");
 
@@ -129,6 +144,11 @@ namespace Coffee_App.Models
                     .HasMaxLength(50);
 
                 entity.Property(e => e.Quantity).HasColumnName("quantity");
+
+                entity.Property(e => e.Size)
+                    .IsRequired()
+                    .HasColumnName("size")
+                    .HasMaxLength(1);
 
                 entity.Property(e => e.UnitPrice).HasColumnName("unitPrice");
 

@@ -72,6 +72,8 @@ namespace Coffee_App
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IProductSizeRepository, ProductSizeRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
 
 
         }
@@ -92,7 +94,7 @@ namespace Coffee_App
 
             app.UseAuthentication(); // phai de dong nay truoc dong  app.UseAuthorization();
             app.UseAuthorization();
-            
+
 
 
             app.UseEndpoints(endpoints =>

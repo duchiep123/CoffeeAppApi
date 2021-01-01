@@ -13,6 +13,9 @@ namespace Coffee_App.Models
         public int OrderId { get; set; }
         public string UserId { get; set; }
         public DateTime OrderTime { get; set; }
+        public string Address { get; set; }
+        public string ReceiverName { get; set; }
+        public string Phone { get; set; }
         public DateTime? ReceiveTime { get; set; }
         public string CouponId { get; set; }
         public int TotalPrice { get; set; }
