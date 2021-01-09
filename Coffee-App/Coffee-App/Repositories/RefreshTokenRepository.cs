@@ -9,20 +9,11 @@ using System.Threading.Tasks;
 
 namespace Coffee_App.Repositories
 {
-    public class UserRepository : BaseRepository<User>, IUserRepository
+    public class RefreshTokenRepository : BaseRepository<RefreshToken>, IRefreshTokenRepository
     {
-        public UserRepository(DbContext dbContext) : base(dbContext)
+        public RefreshTokenRepository(DbContext dbContext) : base(dbContext)
         {
 
         }
-
-        public object RefreshToken(string token, string refreshToken)
-        {
-
-            return null;
-        }
-
-
-
     }
 }

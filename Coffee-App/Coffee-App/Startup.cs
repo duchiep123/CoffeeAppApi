@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Coffee_App.IRepositories;
 using Coffee_App.Models;
 using Coffee_App.Repositories;
+using Coffee_App.Token;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -58,8 +59,27 @@ namespace Coffee_App
                     IssuerSigningKey = symmetricSecurityKey
                 };
 
-
             });
+            // Register the Swagger generator, defining 1 or more Swagger documents
+            /* services.AddSwaggerGen(c =>
+             {
+                 c.SwaggerDoc("v1", new Info { Title = "AspNetCoreApiStarter", Version = "v1" });
+                 // Swagger 2.+ support
+                 c.AddSecurityDefinition("Bearer", new ApiKeyScheme
+                 {
+                     In = "header",
+                     Description = "Please insert JWT with Bearer into field",
+                     Name = "Authorization",
+                     Type = "apiKey"
+                 });
+
+                 c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>
+   {
+     { "Bearer", new string[] { } }
+   });
+             });*/
+
+
             services.AddCors(option =>
             {
                 option.AddPolicy("CoffeePolicy",
@@ -74,6 +94,10 @@ namespace Coffee_App
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
+            services.AddScoped<IJwtTokenRepository, JwtTokenRepository>();
+            services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+            services.AddScoped<ICoffeeToken, CoffeeToken>();
+
 
 
         }

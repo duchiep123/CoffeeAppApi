@@ -52,7 +52,7 @@ namespace Coffee_App.Controllers
                     return BadRequest(JsonConvert.SerializeObject(new { OrderId = -1, AmountDetail = -1, Message = e.InnerException.Message }));
                 }
             }
-            return BadRequest();
+            return BadRequest(ModelState);
         }
 
         [Authorize]
@@ -79,7 +79,7 @@ namespace Coffee_App.Controllers
                     return Ok(json);
                 }
             }
-            return BadRequest();
+            return BadRequest(ModelState);
         }
     }
 }

@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 
 namespace Coffee_App.IRepositories
 {
-    public interface IUserRepository : IBaseRepository<User>
+    public interface IJwtTokenRepository : IBaseRepository<JwtToken>
     {
-        object RefreshToken(string token, string refreshToken); 
     }
 }

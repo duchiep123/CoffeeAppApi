@@ -20,15 +20,12 @@ namespace Coffee_App.Controllers
     public class UserController : ControllerBase
     {
         IUserRepository _userRepository;
-        IConfiguration _config;
-        CoffeeToken token;
+        ICoffeeToken _coffeeToken;
 
-        public UserController(IUserRepository userRepository, IConfiguration config)
+        public UserController(IUserRepository userRepository,ICoffeeToken coffeeToken)
         {
-            _config = config;
             _userRepository = userRepository;
-            token = new CoffeeToken(config);
-
+            _coffeeToken = coffeeToken;
         }
 
         [HttpPost]
@@ -40,8 +37,7 @@ namespace Coffee_App.Controllers
                 {
                     if (_userRepository.Get(req.UserId) != null)
                     {
-                        string coffeeToken = token.CreateToken();
-                        var response = new ResponseRegisterModel() { Token = coffeeToken, Status = 0, Error = null }; //
+                        var response = _coffeeToken.CreateToken(req.UserId); // status =0 is no error
                         return Ok(JsonConvert.SerializeObject(response));
                     }
                     User user = new User();
@@ -63,20 +59,39 @@ namespace Coffee_App.Controllers
                     _userRepository.Add(user);
                     if (_userRepository.SaveChanges() == 1) // register success
                     {
-                        string coffeeToken = token.CreateToken();
-                        var response = new ResponseRegisterModel() { Token = coffeeToken, Status = 0, Error = null };
+                        var response = _coffeeToken.CreateToken(req.UserId);
                         return Ok(JsonConvert.SerializeObject(response));
                     }
                 }
-
                 catch (Exception ex)
                 {
-                    var response = new ResponseRegisterModel() { Token = null, Status = 2, Error = "Error Server. " + ex.InnerException.Message }; //
+                    var response = new ResponseRegisterModel() { Token = null, Status = 1, RefreshToken = "", Error = "Error Server. " + ex.InnerException.Message }; //
                     return BadRequest(JsonConvert.SerializeObject(response));
                 }
             }
-            return BadRequest();
+            return BadRequest(ModelState);
         }
+
+        [HttpPost("refresh-token")]
+        public ActionResult RefreshToken(RefreshTokenRequest refreshTokenRequest)
+        {
+            if (ModelState.IsValid)
+            {
+                string resultCheck = _coffeeToken.CheckRefreshToken(refreshTokenRequest.Token, refreshTokenRequest.RefreshToken);
+                if (resultCheck == "OK")
+                {
+                    string userId = _coffeeToken.GetUserIdFromJWT(refreshTokenRequest.Token);
+                    var rep = _coffeeToken.CreateToken(userId);
+                    return Ok(JsonConvert.SerializeObject(rep));
+                }
+                else
+                {
+                    return BadRequest(JsonConvert.SerializeObject(new { Error = resultCheck }));
+                }
+            }
+            return BadRequest(ModelState);
+        }
+
 
         [Authorize]
         [HttpPut("update/id/{id}")]
@@ -104,7 +119,7 @@ namespace Coffee_App.Controllers
                     return BadRequest(JsonConvert.SerializeObject(new { error = e.InnerException.Message }));
                 }
             }
-            return BadRequest();
+            return BadRequest(ModelState);
         }
 
         [Authorize]
@@ -131,7 +146,7 @@ namespace Coffee_App.Controllers
                     return BadRequest(JsonConvert.SerializeObject(new { error = e.InnerException.Message }));
                 }
             }
-            return BadRequest();
+            return BadRequest(ModelState);
         }
 
         [Authorize]

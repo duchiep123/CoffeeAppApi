@@ -5,11 +5,10 @@ using System.Threading.Tasks;
 
 namespace Coffee_App.RequestModels
 {
-    public class ResponseRegisterModel
+    public class RefreshTokenRequest
     {
         public string Token { get; set; }
         public string RefreshToken { get; set; }
-        public int Status { get; set; }
-        public string Error { get; set; }
+         
     }
 }

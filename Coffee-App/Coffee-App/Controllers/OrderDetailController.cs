@@ -45,7 +45,7 @@ namespace Coffee_App.Controllers
                 }
                 return BadRequest(JsonConvert.SerializeObject(new { Error = "Add fail." }));
             }
-            return BadRequest();
+            return BadRequest(ModelState);
 
         }
     }

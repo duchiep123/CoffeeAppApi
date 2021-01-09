@@ -16,11 +16,13 @@ namespace Coffee_App.Models
         }
 
         public virtual DbSet<Coupon> Coupon { get; set; }
+        public virtual DbSet<JwtToken> JwtToken { get; set; }
         public virtual DbSet<Order> Order { get; set; }
         public virtual DbSet<OrderDetail> OrderDetail { get; set; }
         public virtual DbSet<Product> Product { get; set; }
         public virtual DbSet<ProductSize> ProductSize { get; set; }
         public virtual DbSet<ProductType> ProductType { get; set; }
+        public virtual DbSet<RefreshToken> RefreshToken { get; set; }
         public virtual DbSet<User> User { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -71,6 +73,29 @@ namespace Coffee_App.Models
                     .IsRequired()
                     .HasColumnName("title")
                     .HasMaxLength(200);
+            });
+
+            modelBuilder.Entity<JwtToken>(entity =>
+            {
+                entity.HasKey(e => e.Token);
+
+                entity.Property(e => e.Token).HasMaxLength(300);
+
+                entity.Property(e => e.CreateDate).HasColumnType("datetime");
+
+                entity.Property(e => e.ExpirationDate).HasColumnType("datetime");
+
+                entity.Property(e => e.RevokeDateTime).HasColumnType("datetime");
+
+                entity.Property(e => e.UserId)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.JwtToken)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_JwtToken_User");
             });
 
             modelBuilder.Entity<Order>(entity =>
@@ -231,6 +256,32 @@ namespace Coffee_App.Models
                     .IsRequired()
                     .HasColumnName("description")
                     .HasMaxLength(200);
+            });
+
+            modelBuilder.Entity<RefreshToken>(entity =>
+            {
+                entity.HasKey(e => e.Token)
+                    .HasName("PK_Token");
+
+                entity.Property(e => e.Token).HasMaxLength(200);
+
+                entity.Property(e => e.CreateTime).HasColumnType("datetime");
+
+                entity.Property(e => e.ExpiryDate).HasColumnType("datetime");
+
+                entity.Property(e => e.JwtId)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
+                entity.Property(e => e.UserId)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.RefreshToken)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_RefreshToken_User");
             });
 
             modelBuilder.Entity<User>(entity =>

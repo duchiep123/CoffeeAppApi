@@ -7,7 +7,9 @@ namespace Coffee_App.Models
     {
         public User()
         {
+            JwtToken = new HashSet<JwtToken>();
             Order = new HashSet<Order>();
+            RefreshToken = new HashSet<RefreshToken>();
         }
 
         public string UserId { get; set; }
@@ -21,6 +23,8 @@ namespace Coffee_App.Models
         public int Status { get; set; }
         public DateTime CreateDate { get; set; }
 
+        public virtual ICollection<JwtToken> JwtToken { get; set; }
         public virtual ICollection<Order> Order { get; set; }
+        public virtual ICollection<RefreshToken> RefreshToken { get; set; }
     }
 }
