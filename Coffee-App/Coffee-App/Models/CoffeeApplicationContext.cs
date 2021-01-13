@@ -16,7 +16,6 @@ namespace Coffee_App.Models
         }
 
         public virtual DbSet<Coupon> Coupon { get; set; }
-        public virtual DbSet<JwtToken> JwtToken { get; set; }
         public virtual DbSet<Order> Order { get; set; }
         public virtual DbSet<OrderDetail> OrderDetail { get; set; }
         public virtual DbSet<Product> Product { get; set; }
@@ -73,29 +72,6 @@ namespace Coffee_App.Models
                     .IsRequired()
                     .HasColumnName("title")
                     .HasMaxLength(200);
-            });
-
-            modelBuilder.Entity<JwtToken>(entity =>
-            {
-                entity.HasKey(e => e.Token);
-
-                entity.Property(e => e.Token).HasMaxLength(300);
-
-                entity.Property(e => e.CreateDate).HasColumnType("datetime");
-
-                entity.Property(e => e.ExpirationDate).HasColumnType("datetime");
-
-                entity.Property(e => e.RevokeDateTime).HasColumnType("datetime");
-
-                entity.Property(e => e.UserId)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.JwtToken)
-                    .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_JwtToken_User");
             });
 
             modelBuilder.Entity<Order>(entity =>

@@ -15,12 +15,10 @@ namespace Coffee_App.Controllers
     [ApiController]
     public class CouponController : ControllerBase
     {
-        IConfiguration _config;
         ICouponRepository _couponRepository;
 
-        public CouponController(IConfiguration config, ICouponRepository couponRepository)
+        public CouponController(ICouponRepository couponRepository)
         {
-            _config = config;
             _couponRepository = couponRepository;
         }
 

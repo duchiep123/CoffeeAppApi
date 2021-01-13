@@ -11,5 +11,6 @@ namespace Coffee_App.Token
         ResponseRegisterModel CreateToken(string userId);
         string CheckRefreshToken(string token, string refrehToken);
         string GetUserIdFromJWT(string token);
+      
     }
 }

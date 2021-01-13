@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Coffee_App.IRepositories;
 using Coffee_App.Models;
 using Coffee_App.RequestModels;
+using Coffee_App.Token;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +21,7 @@ namespace Coffee_App.Controllers
         IOrderRepository _orderRepository;
         IOrderDetailRepository _orderDetailRepository;
 
-        public OrderController( IOrderRepository orderRepository, IOrderDetailRepository orderDetailRepository)
+        public OrderController(IOrderRepository orderRepository, IOrderDetailRepository orderDetailRepository)
         {
             _orderRepository = orderRepository;
             _orderDetailRepository = orderDetailRepository;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Coffee_App.Cache;
 using Coffee_App.IRepositories;
 using Coffee_App.Models;
 using Coffee_App.RequestModels;
@@ -22,7 +23,7 @@ namespace Coffee_App.Controllers
         IUserRepository _userRepository;
         ICoffeeToken _coffeeToken;
 
-        public UserController(IUserRepository userRepository,ICoffeeToken coffeeToken)
+        public UserController(IUserRepository userRepository, ICoffeeToken coffeeToken)
         {
             _userRepository = userRepository;
             _coffeeToken = coffeeToken;
@@ -68,6 +69,22 @@ namespace Coffee_App.Controllers
                     var response = new ResponseRegisterModel() { Token = null, Status = 1, RefreshToken = "", Error = "Error Server. " + ex.InnerException.Message }; //
                     return BadRequest(JsonConvert.SerializeObject(response));
                 }
+            }
+            return BadRequest(ModelState);
+        }
+
+        [Authorize]
+        [HttpGet("logout/{id}")]
+        public ActionResult Logout(string id)
+        {
+            if (ModelState.IsValid)
+            {
+                Dictionary<string, DateTime> jwtCache = JWTTokenCache.AppCache;
+                string token = Request.Headers["Authorization"];
+                token = token.Substring(7);
+                jwtCache.Remove(token);
+                return Ok();
+
             }
             return BadRequest(ModelState);
         }
@@ -171,6 +188,7 @@ namespace Coffee_App.Controllers
                     string json = JsonConvert.SerializeObject(responseUser);
                     return Ok(json);
                 }
+
             }
             catch (Exception e)
             {
@@ -178,5 +196,38 @@ namespace Coffee_App.Controllers
             }
             return BadRequest(JsonConvert.SerializeObject(new { message = "This userId is not existed." }));
         }
+
+        // set token into cookie
+        /*   [HttpPost("authenticate")]
+           public IActionResult Authenticate([FromBody]LoginRequest loginRequest)
+           {
+
+               //validate user credentials and if they validation failed return a similar response to below
+               //return NotFound();
+
+               var tokenHandler = new JwtSecurityTokenHandler();
+               var key = Encoding.ASCII.GetBytes("MySecurelyInjectedAsymKey");
+               var tokenDescriptor = new SecurityTokenDescriptor
+               {
+                   Subject = new ClaimsIdentity(new Claim[]
+                   {
+                       //add my users claims etc
+                   }),
+                   Expires = DateTime.UtcNow.AddDays(1),//configure your token lifespan and needed
+                   SigningCredentials = new SigningCredentials(new SymmetricSecurityKey("MyVerySecureSecreteKey"), SecurityAlgorithms.HmacSha256Signature),
+                   Issuer = "YourOrganizationOrUniqueKey",
+                   IssuedAt = DateTime.UtcNow
+               };
+
+               var token = tokenHandler.CreateToken(tokenDescriptor);
+               var tokenString = tokenHandler.WriteToken(token);
+               var cookieOptions = new CookieOptions();
+               cookieOptions.Expires = DateTimeOffset.UtcNow.AddHours(4);//you can set this to a suitable timeframe for your situation 
+               cookieOptions.Domain = Request.Host.Value;
+               cookieOptions.Path = "/";
+               Response.Cookies.Append("jwt", tokenString, cookieOptions);
+               return Ok();
+
+           }*/
     }
 }

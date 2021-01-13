@@ -1,4 +1,5 @@
-﻿using Coffee_App.IRepositories;
+﻿using Coffee_App.Cache;
+using Coffee_App.IRepositories;
 using Coffee_App.Models;
 using Coffee_App.RequestModels;
 using Microsoft.Extensions.Configuration;
@@ -17,14 +18,12 @@ namespace Coffee_App.Token
     {
         private IConfiguration _config;
         private IRefreshTokenRepository _refreshTokenRepository;
-        private IJwtTokenRepository _jwtTokenRepository;
 
 
-        public CoffeeToken(IConfiguration config, IRefreshTokenRepository refreshTokenRepository, IJwtTokenRepository jwtTokenRepository)
+        public CoffeeToken(IConfiguration config, IRefreshTokenRepository refreshTokenRepository)
         {
             _config = config;
             _refreshTokenRepository = refreshTokenRepository;
-            _jwtTokenRepository = jwtTokenRepository;
 
         }
 
@@ -55,6 +54,8 @@ namespace Coffee_App.Token
 
             // token to string
             var tokenString = handler.WriteToken(token);
+            Dictionary<string, DateTime> jwtList = JWTTokenCache.AppCache;
+            jwtList.Add(tokenString, createDateTime);
 
             var jwt = new JwtToken()
             {
@@ -65,12 +66,6 @@ namespace Coffee_App.Token
                 UserId = userId
 
             };
-            _jwtTokenRepository.Add(jwt);
-            if (_jwtTokenRepository.SaveChanges() != 1)
-            {
-                return new ResponseRegisterModel() { Token = "", RefreshToken = "", Error = "Error add JwtToken to database", Status = 1 };
-            }
-
             var refreshToken = CreateRefreshToken(jwtId, userId);
             if (refreshToken != null)
             {
@@ -183,8 +178,6 @@ namespace Coffee_App.Token
             var userId = tokenObj.Claims.First(claim => claim.Type == "UserId").Value;
             return userId;
         }
-
-
 
         /* public static string GetEquipmentIdFromJWT(string token)
          {

@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Coffee_App.Cache;
 using Coffee_App.IRepositories;
+using Coffee_App.Middleware;
 using Coffee_App.Models;
 using Coffee_App.Repositories;
 using Coffee_App.Token;
@@ -23,10 +25,12 @@ namespace Coffee_App
 {
     public class Startup
     {
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
+
 
         public IConfiguration Configuration { get; }
 
@@ -58,8 +62,8 @@ namespace Coffee_App
                     ValidAudience = audience, //typically, the base address of the resource being accessed, such as https://contoso.com.
                     IssuerSigningKey = symmetricSecurityKey
                 };
-
             });
+
             // Register the Swagger generator, defining 1 or more Swagger documents
             /* services.AddSwaggerGen(c =>
              {
@@ -94,12 +98,12 @@ namespace Coffee_App
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
-            services.AddScoped<IJwtTokenRepository, JwtTokenRepository>();
             services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
             services.AddScoped<ICoffeeToken, CoffeeToken>();
-
-
-
+            /* services.Configure<IISServerOptions>(options =>
+             {
+                 options.AllowSynchronousIO = true;
+             });*/
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -115,12 +119,9 @@ namespace Coffee_App
 
             app.UseRouting();
             app.UseCors("CoffeePolicy");
-
             app.UseAuthentication(); // phai de dong nay truoc dong  app.UseAuthorization();
+            app.UseMiddleware<ChallengeMiddleware>();
             app.UseAuthorization();
-
-
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
