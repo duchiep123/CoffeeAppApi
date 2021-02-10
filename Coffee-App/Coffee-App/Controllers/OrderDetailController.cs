@@ -48,5 +48,20 @@ namespace Coffee_App.Controllers
             return BadRequest(ModelState);
 
         }
+        [Authorize]
+        [HttpGet("orderid/{id}")]
+        public ActionResult GetListDetail(int id)
+        {
+            if (ModelState.IsValid)
+            {
+                IQueryable<OrderDetail> orderDetails = _orderDetailRepository.GetOrderDetailsByOrderId(id);
+                if(orderDetails != null)
+                {
+                    return Ok(JsonConvert.SerializeObject(new { orderdetails = orderDetails, status = 1}));
+                }
+                return Ok(JsonConvert.SerializeObject(new {  status = 0 }));
+            }
+            return BadRequest(ModelState);
+        }
     }
 }

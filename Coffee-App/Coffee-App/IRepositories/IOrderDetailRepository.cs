@@ -10,5 +10,6 @@ namespace Coffee_App.IRepositories
     public interface IOrderDetailRepository : IBaseRepository<OrderDetail>
     {
         int GetAmountByOrderId(int orderId);
+        IQueryable<OrderDetail> GetOrderDetailsByOrderId(int orderId);
     }
 }

@@ -32,5 +32,23 @@ namespace Coffee_App.Repositories
             return 0;
 
         }
+
+        public IQueryable<OrderDetail> GetOrderDetailsByOrderId(int orderId)
+        {
+            IQueryable<OrderDetail> orderDetails = (from o in _dbSet
+                                            where o.OrderId == orderId
+                                            select new OrderDetail
+                                            {
+                                                ProductName = o.ProductName,
+                                                Quantity = o.Quantity,
+                                                UnitPrice = o.UnitPrice,
+                                                Size = o.Size
+                                            });
+            if (orderDetails.Count() != 0)
+            {
+                return orderDetails;
+            }
+            return null;
+        }
     }
 }

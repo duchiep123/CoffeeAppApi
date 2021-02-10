@@ -56,7 +56,7 @@ namespace Coffee_App.GenericRepository
         public void Update(T items)
         {
             _dbSet.Update(items);
-            // _dbContext.Entry(exist).CurrentValues.SetValues(items);
+            _dbContext.Entry(items).State = EntityState.Modified;
 
         }
     }
