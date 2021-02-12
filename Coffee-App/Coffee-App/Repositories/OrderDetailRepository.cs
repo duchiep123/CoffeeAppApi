@@ -16,6 +16,21 @@ namespace Coffee_App.Repositories
 
         }
 
+        public int CheckOrderDetailBelongToOrder(int orderDetailId, int orderId)
+        {
+            OrderDetail orderDetail = (from o in _dbSet
+                                       where o.OrderId == orderId && o.DetailId == orderDetailId
+                                       select new OrderDetail {
+                                           DetailId = o.DetailId
+                                       }).FirstOrDefault<OrderDetail>();
+            if(orderDetail != null)
+            {
+                return 1;
+            }
+            return -1;
+                 
+        }
+
         public int GetAmountByOrderId(int orderId)
         {
             IEnumerable<OrderDetail> enu = (from o in _dbSet
@@ -37,13 +52,7 @@ namespace Coffee_App.Repositories
         {
             IQueryable<OrderDetail> orderDetails = (from o in _dbSet
                                             where o.OrderId == orderId
-                                            select new OrderDetail
-                                            {
-                                                ProductName = o.ProductName,
-                                                Quantity = o.Quantity,
-                                                UnitPrice = o.UnitPrice,
-                                                Size = o.Size
-                                            });
+                                            select o);
             if (orderDetails.Count() != 0)
             {
                 return orderDetails;

@@ -10,5 +10,7 @@ namespace Coffee_App.IRepositories
     public interface IOrderRepository : IBaseRepository<Order>
     {
         int GetOrderIdByUserId(string userId);
+        Order ConfirmOrder(int orderId, string userId);
+        int CheckStatusOrder(int orderId);
     }
 }

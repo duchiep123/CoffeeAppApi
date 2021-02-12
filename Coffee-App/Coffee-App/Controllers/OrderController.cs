@@ -28,6 +28,37 @@ namespace Coffee_App.Controllers
         }
 
         [Authorize]
+        [HttpPut("confirm")]
+        public ActionResult Confirm(ConfirmOrder req)
+        {
+            if (ModelState.IsValid)
+            {
+                if(_orderRepository.CheckStatusOrder(req.OrderId) == 0)
+                {
+                    Order order = _orderRepository.ConfirmOrder(req.OrderId, req.UserId);
+                    if (order != null)
+                    {
+                        order.OrderTime = DateTime.Now;
+                        order.Status = 1;
+                        if (_orderRepository.SaveChanges() == 1)
+                        {
+                            return Ok();
+                        }
+                        else
+                        {
+                            return BadRequest(JsonConvert.SerializeObject(new { message = "Server Error" }));
+                        }
+                    }
+                    return BadRequest(JsonConvert.SerializeObject(new { message = "Order and user not match." }));
+                }
+                return BadRequest(JsonConvert.SerializeObject(new { message = "The order has done." }));
+
+            }
+            return BadRequest(ModelState);
+        }
+
+
+        [Authorize]
         [HttpGet("userid/{id}")]
         public ActionResult GetOrderId(string id)
         {

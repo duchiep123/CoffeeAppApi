@@ -56,6 +56,9 @@ namespace Coffee_App
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidateIssuerSigningKey = true,
+                    //There is one token validation parameter called ClockSkew, it is gets or sets the clock skew to apply when validating a time. The default value of ClockSkew is 5 minutes. That means if you haven't set it,
+                    //your token will be still valid up to 5 minutes.
+                    ClockSkew = TimeSpan.Zero, 
 
                     // set up validate data 
                     ValidIssuer = issuer, //The audience "aud" claim in a JWT is meant to refer to the Resource Servers that should accept the token.

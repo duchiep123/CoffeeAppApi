@@ -15,6 +15,31 @@ namespace Coffee_App.Repositories
         {
 
         }
+
+        public int CheckStatusOrder(int orderId)
+        {
+            Order order = (from o in _dbSet
+                           where o.OrderId == orderId && o.Status == 0
+                           select new Order
+                           {
+                               OrderId = o.OrderId
+
+                           }).FirstOrDefault<Order>();
+            if(order != null)
+            {
+                return 0;
+            }
+            return 1;
+        }
+
+        public Order ConfirmOrder(int orderId, string userId)
+        {
+            Order order = (from o in _dbSet
+                           where o.OrderId == orderId && o.UserId == userId && o.Status == 0
+                           select o).FirstOrDefault<Order>();
+            return order;
+        }
+
         public int GetOrderIdByUserId(string userId)
         {
             Order order = (from o in _dbSet
