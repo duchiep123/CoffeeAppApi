@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Coffee_App.RequestModels
 {
-    public class UpdateOrderDertail
+    public class OrderDetailDelModel
     {
         [Required]
         public int OrderDetailId { get; set; }
@@ -17,9 +17,6 @@ namespace Coffee_App.RequestModels
         [Required]
         public string UserId { get; set; }
         [Required]
-        public int Mode { get; set; }
-
-
-
+        public int Quantity { get; set; }
     }
 }

@@ -12,5 +12,6 @@ namespace Coffee_App.IRepositories
         int GetAmountByOrderId(int orderId);
         IQueryable<OrderDetail> GetOrderDetailsByOrderId(int orderId);
         int CheckOrderDetailBelongToOrder(int orderDetailId, int orderId);
+        OrderDetail GetOrderDetailFollowOption(int orderId, string productId, string size);
     }
 }

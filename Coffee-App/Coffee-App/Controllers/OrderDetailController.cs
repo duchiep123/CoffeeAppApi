@@ -30,24 +30,81 @@ namespace Coffee_App.Controllers
         {
             if (ModelState.IsValid)
             {
-                if(_orderRepository.CheckStatusOrder(req.OrderId) == 0)
+                if (_orderRepository.CheckStatusOrder(req.OrderId) == 0)
                 {
-                    if(_orderDetailRepository.CheckOrderDetailBelongToOrder(req.OrderDetailId,req.OrderId)==1)
+                    if (_orderDetailRepository.CheckOrderDetailBelongToOrder(req.OrderDetailId, req.OrderId) == 1)
                     {
-                        OrderDetail orderDetail = _orderDetailRepository.Get(req.OrderDetailId);
-                        if (orderDetail != null)
+                        Order order = _orderRepository.Get(req.OrderId);
+                        if (order.UserId.Equals(req.UserId))
                         {
-                            orderDetail.Quantity = req.Quantity;
-                            if (_orderDetailRepository.SaveChanges() == 1)
+                            OrderDetail orderDetail = _orderDetailRepository.Get(req.OrderDetailId);
+                            if (orderDetail != null)
                             {
-                                int totalPrice = req.Quantity * req.UnitPrice;
-                                if (UpdateOrderAfterBuy(req.OrderId, totalPrice) == 1)
+                                int price = req.UnitPrice;
+                                if (req.Mode == 1)
                                 {
-                                    return Ok();
+                                    orderDetail.Quantity += 1; // nếu user giảm quantity thì quantity âm
                                 }
+                                else if (req.Mode == 0)
+                                {
+                                    orderDetail.Quantity -= 1;
+                                    price = -price;
+                                }
+                                else
+                                {
+                                    return BadRequest(JsonConvert.SerializeObject(new { message = "Mode must between 1 or 0" }));
+                                }
+                                if (_orderDetailRepository.SaveChanges() == 1)
+                                {
+
+                                    int result = UpdateOrderAfterBuy(req.OrderId, price);
+                                    if (result != -1)
+                                    {
+                                        return Ok(JsonConvert.SerializeObject(new { totalPrice = result }));
+                                    }
+                                }
+                                return BadRequest(JsonConvert.SerializeObject(new { message = "Server Error." }));
                             }
-                            return BadRequest(JsonConvert.SerializeObject(new { message = "Server Error." }));
                         }
+                        return BadRequest(JsonConvert.SerializeObject(new { message = "The order is not macth to user." }));
+                    }
+                    return BadRequest(JsonConvert.SerializeObject(new { message = "Order detail is not match to order." }));
+                }
+                return BadRequest(JsonConvert.SerializeObject(new { message = "The cart is done." }));
+            }
+            return BadRequest(ModelState);
+        }
+
+        [Authorize]
+        [HttpDelete]
+        public ActionResult DeleteOrderDetail(OrderDetailDelModel req)
+        {
+            if (ModelState.IsValid)
+            {
+                if (_orderRepository.CheckStatusOrder(req.OrderId) == 0)
+                {
+                    if (_orderDetailRepository.CheckOrderDetailBelongToOrder(req.OrderDetailId, req.OrderId) == 1)
+                    {
+                        Order order = _orderRepository.Get(req.OrderId);
+                        if (order.UserId.Equals(req.UserId))
+                        {
+                            OrderDetail orderDetail = _orderDetailRepository.Get(req.OrderDetailId);
+                            if (orderDetail != null)
+                            {
+                                _orderDetailRepository.Delete(req.OrderDetailId);
+                                if (_orderDetailRepository.SaveChanges() == 1)
+                                {
+                                    int price = -(req.Quantity * req.UnitPrice);
+                                    int result = UpdateOrderAfterBuy(req.OrderId, price);
+                                    if (result != -1)
+                                    {
+                                        return Ok(JsonConvert.SerializeObject(new { totalPrice = result }));
+                                    }
+                                }
+                                return BadRequest(JsonConvert.SerializeObject(new { message = "Server Error." }));
+                            }
+                        }
+                        return BadRequest(JsonConvert.SerializeObject(new { message = "The order is not macth to user." }));
                     }
                     return BadRequest(JsonConvert.SerializeObject(new { message = "Order detail is not match to order." }));
                 }
@@ -58,28 +115,38 @@ namespace Coffee_App.Controllers
 
         [Authorize]
         [HttpPost]
-        public ActionResult Add(OrderDetailRequest req)
+        public ActionResult Add(OrderDetailRequest req) // ok
         {
             if (ModelState.IsValid)
             {
                 if (_orderRepository.CheckStatusOrder(req.OrderId) == 0)
                 {
-                    OrderDetail orderDetail = new OrderDetail()
+                    OrderDetail o = _orderDetailRepository.GetOrderDetailFollowOption(req.OrderId, req.ProductId, req.Size);
+                    if (o != null)
                     {
-                        OrderId = req.OrderId,
-                        ProductId = req.ProductId,
-                        ProductName = req.ProductName,
-                        Quantity = req.Quantity,
-                        UnitPrice = req.UnitPrice,
-                        Size = req.Size
-                    };
-                    _orderDetailRepository.Add(orderDetail);
+                        o.Quantity += req.Quantity;
+
+                    }
+                    else
+                    {
+                        OrderDetail orderDetail = new OrderDetail()
+                        {
+                            OrderId = req.OrderId,
+                            ProductId = req.ProductId,
+                            ProductName = req.ProductName,
+                            Quantity = req.Quantity,
+                            UnitPrice = req.UnitPrice,
+                            Size = req.Size
+                        };
+                        _orderDetailRepository.Add(orderDetail);
+                    }
                     if (_orderDetailRepository.SaveChanges() > 0)
                     {
                         int totalPrice = req.Quantity * req.UnitPrice;
-                        if (UpdateOrderAfterBuy(req.OrderId, totalPrice) == 1)
+                        int result = UpdateOrderAfterBuy(req.OrderId, totalPrice);
+                        if (result != -1)
                         {
-                            return Ok();
+                            return Ok(JsonConvert.SerializeObject(new { totalPrice }));
                         }
                         return BadRequest(JsonConvert.SerializeObject(new { Error = "Update total price in order fail." }));
                     }
@@ -95,14 +162,13 @@ namespace Coffee_App.Controllers
             Order order = _orderRepository.Get(orderId);
             if (order != null)
             {
-                order.TotalPrice = order.TotalPrice + price;
+                order.TotalPrice += price;
                 if (_orderRepository.SaveChanges() == 1)
                 {
-                    return 1;
+                    return order.TotalPrice;
                 }
             }
             return -1;
-
         }
 
 

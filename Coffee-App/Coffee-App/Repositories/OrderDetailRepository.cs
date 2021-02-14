@@ -48,6 +48,14 @@ namespace Coffee_App.Repositories
 
         }
 
+        public OrderDetail GetOrderDetailFollowOption(int orderId, string productId, string size)
+        {
+            OrderDetail orderDetail = (from o in _dbSet
+                                       where o.OrderId == orderId && o.ProductId == productId && o.Size == size
+                                       select o).FirstOrDefault<OrderDetail>();
+            return orderDetail;
+        }
+
         public IQueryable<OrderDetail> GetOrderDetailsByOrderId(int orderId)
         {
             IQueryable<OrderDetail> orderDetails = (from o in _dbSet
