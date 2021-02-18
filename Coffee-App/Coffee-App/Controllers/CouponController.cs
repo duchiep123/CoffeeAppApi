@@ -29,13 +29,20 @@ namespace Coffee_App.Controllers
         {
             try
             {
-                List<Coupon> coupons =await  _couponRepository.GetAvailableCoupon();
+                //  List<Coupon> coupons =await  _couponRepository.GetAvailableCoupon();
+                Task<List<Coupon>> TaskGetCounpon = _couponRepository.GetAvailableCoupon();
+                Task<List<string>> TaskGetCouponIdsUsed = _orderRepository.GetListCouponIdInOrderOfUser(id);
+                await Task.WhenAll(TaskGetCounpon, TaskGetCouponIdsUsed);
+                List<Coupon> coupons = TaskGetCounpon.Result;
+                List<string> couponIdsUsed = TaskGetCouponIdsUsed.Result;
+
                 List<string> listCouponIdsAvailable = new List<string>();
+
                 for (int i = 0; i < coupons.Count; i++)
                 {
                     listCouponIdsAvailable.Add(coupons[i].CouponId);
                 }
-                List<string> couponIdsUsed = await _orderRepository.GetListCouponIdInOrderOfUser(id);
+                //  List<string> couponIdsUsed = await _orderRepository.GetListCouponIdInOrderOfUser(id);
                 List<Coupon> returnCoupons = new List<Coupon>();
                 for (int i = 0; i < couponIdsUsed.Count; i++)
                 {
