@@ -16,5 +16,21 @@ namespace Coffee_App.Repositories
 
         }
 
+        public async Task<List<Coupon>> GetAvailableCoupon()
+        {
+            List<Coupon> coupons = await (from c in _dbSet
+                                          where c.ExpiryDate <= DateTime.Now && c.Status == 1
+                                          select new Coupon { 
+                                            CouponId = c.CouponId,
+                                            Title = c.Title,
+                                            Description =c.Description,
+                                            Image = c.Image,
+                                            Sale = c.Sale,
+                                            Condition = c.Condition,
+                                            StartDate = c.StartDate,
+                                            ExpiryDate = c.ExpiryDate
+                                          }).ToListAsync<Coupon>();
+            return coupons;
+        }
     }
 }

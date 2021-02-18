@@ -9,6 +9,6 @@ namespace Coffee_App.IRepositories
 {
     public interface ICouponRepository : IBaseRepository<Coupon>
     {
-
+        Task<List<Coupon>> GetAvailableCoupon();
     }
 }

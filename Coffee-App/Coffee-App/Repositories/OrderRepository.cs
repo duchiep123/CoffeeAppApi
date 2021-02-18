@@ -16,6 +16,18 @@ namespace Coffee_App.Repositories
 
         }
 
+        public bool CheckCounpoInOrder(string userId, string couponId)
+        {
+            Order order = (from o in _dbSet
+                           where o.CouponId == couponId && o.UserId == userId
+                           select o).FirstOrDefault<Order>();
+            if (order != null)
+            {
+                return false;
+            }
+            return true;
+        }
+
         public int CheckStatusOrder(int orderId)
         {
             Order order = (from o in _dbSet
@@ -25,7 +37,7 @@ namespace Coffee_App.Repositories
                                OrderId = o.OrderId
 
                            }).FirstOrDefault<Order>();
-            if(order != null)
+            if (order != null)
             {
                 return 0;
             }
@@ -38,6 +50,27 @@ namespace Coffee_App.Repositories
                            where o.OrderId == orderId && o.UserId == userId && o.Status == 0
                            select o).FirstOrDefault<Order>();
             return order;
+        }
+
+        public async Task<List<string>> GetListCouponIdInOrderOfUser(string userId)
+        {
+            List<Order> orders = await (from o in _dbSet
+                                        where o.UserId == userId && o.CouponId != null
+                                        select new Order
+                                        {
+                                            CouponId = o.CouponId
+
+                                        }).ToListAsync<Order>();
+            if (orders != null)
+            {
+                List<string> listCounpons = new List<string>();
+                for (int i = 0; i < orders.Count; i++)
+                {
+                    listCounpons.Add(orders[i].CouponId);
+                }
+                return listCounpons;
+            }
+            return null;
         }
 
         public int GetOrderIdByUserId(string userId)

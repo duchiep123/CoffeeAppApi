@@ -16,19 +16,43 @@ namespace Coffee_App.Controllers
     public class CouponController : ControllerBase
     {
         ICouponRepository _couponRepository;
+        IOrderRepository _orderRepository;
 
-        public CouponController(ICouponRepository couponRepository)
+        public CouponController(ICouponRepository couponRepository, IOrderRepository orderRepository)
         {
             _couponRepository = couponRepository;
+            _orderRepository = orderRepository;
         }
 
-        [HttpGet]
-        public ActionResult getAllCoupons()
+        [HttpGet("userid/{id}")]
+        public async Task<ActionResult> getAllCoupons(string id)
         {
             try
             {
-                IEnumerable<Coupon> coupons = _couponRepository.GetAll();
-                string json = JsonConvert.SerializeObject(coupons);
+                List<Coupon> coupons =await  _couponRepository.GetAvailableCoupon();
+                List<string> listCouponIdsAvailable = new List<string>();
+                for (int i = 0; i < coupons.Count; i++)
+                {
+                    listCouponIdsAvailable.Add(coupons[i].CouponId);
+                }
+                List<string> couponIdsUsed = await _orderRepository.GetListCouponIdInOrderOfUser(id);
+                List<Coupon> returnCoupons = new List<Coupon>();
+                for (int i = 0; i < couponIdsUsed.Count; i++)
+                {
+                    if (listCouponIdsAvailable.Contains(couponIdsUsed[i]))
+                    {
+                        listCouponIdsAvailable.Remove(couponIdsUsed[i]);
+                    }
+                }
+
+                for (int i = 0; i < coupons.Count; i++)
+                {
+                    if (listCouponIdsAvailable.Contains(coupons[i].CouponId))
+                    {
+                        returnCoupons.Add(coupons[i]);
+                    }
+                }
+                string json = JsonConvert.SerializeObject(returnCoupons);
                 return Ok(json);
             }
             catch (Exception e)
