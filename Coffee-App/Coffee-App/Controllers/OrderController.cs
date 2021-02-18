@@ -82,22 +82,26 @@ namespace Coffee_App.Controllers
                                     {
                                         if (coupon.ExpiryDate >= DateTime.Now)
                                         {
-                                            if (coupon.Condition == 0)
+                                            if (order.TotalPrice >= coupon.Condition)
                                             {
-                                                float discount = float.Parse(coupon.Sale.Split('%')[0]) / 100;
-                                                order.TotalPrice = (int)(order.TotalPrice - (order.TotalPrice * discount));
+                                                if (coupon.Sale.Contains("%"))
+                                                {
+                                                    float discount = float.Parse(coupon.Sale.Split('%')[0]) / 100;
+                                                    order.TotalPrice = (int)(order.TotalPrice - (order.TotalPrice * discount));
+                                                }
+                                                else
+                                                {
+                                                    int discount = int.Parse(coupon.Sale);
+                                                    order.TotalPrice = order.TotalPrice - discount;
+                                                }
+                                                order.CouponId = req.CouponId;
+                                                if (_orderRepository.SaveChanges() == 1)
+                                                {
+                                                    return Ok(JsonConvert.SerializeObject(new { totalPrice = order.TotalPrice }));
+                                                }
+                                                return BadRequest(JsonConvert.SerializeObject(new { message = "Server Error." }));
                                             }
-                                            else
-                                            {
-                                                int discount = int.Parse(coupon.Sale);
-                                                order.TotalPrice = order.TotalPrice - discount;
-                                            }
-                                            order.CouponId = req.CouponId;
-                                            if (_orderRepository.SaveChanges() == 1)
-                                            {
-                                                return Ok(JsonConvert.SerializeObject(new { totalPrice = order.TotalPrice }));
-                                            }
-                                            return BadRequest(JsonConvert.SerializeObject(new { message = "Server Error." }));
+                                            return BadRequest(JsonConvert.SerializeObject(new { message = "The user is not eligible to receive the coupon." }));
                                         }
                                         return BadRequest(JsonConvert.SerializeObject(new { message = "The coupon has expired." }));
                                     }
