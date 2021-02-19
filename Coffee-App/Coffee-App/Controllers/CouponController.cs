@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Coffee_App.IRepositories;
 using Coffee_App.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -23,7 +24,7 @@ namespace Coffee_App.Controllers
             _couponRepository = couponRepository;
             _orderRepository = orderRepository;
         }
-
+        [Authorize]
         [HttpGet("userid/{id}")]
         public async Task<ActionResult> getAllCoupons(string id)
         {

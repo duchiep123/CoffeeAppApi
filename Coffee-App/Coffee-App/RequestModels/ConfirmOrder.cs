@@ -12,5 +12,10 @@ namespace Coffee_App.RequestModels
         public int OrderId { get; set; }
         [Required]
         public string UserId { get; set; }
+        [Required]
+        public string CouponId { get; set; }
+        [Required]
+        public int TotalPrice { get; set; }
+
     }
 }

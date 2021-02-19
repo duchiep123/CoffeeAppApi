@@ -37,41 +37,10 @@ namespace Coffee_App.Controllers
             {
                 if (_orderRepository.CheckStatusOrder(req.OrderId) == 0)
                 {
-                    Order order = _orderRepository.ConfirmOrder(req.OrderId, req.UserId);
-                    if (order != null)
+                    if (_orderRepository.CheckCounpoInOrder(req.UserId, req.CouponId))
                     {
-                        order.OrderTime = DateTime.Now;
-                        order.Status = 1;
-                        if (_orderRepository.SaveChanges() == 1)
-                        {
-                            return Ok();
-                        }
-                        else
-                        {
-                            return BadRequest(JsonConvert.SerializeObject(new { message = "Server Error" }));
-                        }
-                    }
-                    return BadRequest(JsonConvert.SerializeObject(new { message = "Order and user not match." }));
-                }
-                return BadRequest(JsonConvert.SerializeObject(new { message = "The order has done." }));
-
-            }
-            return BadRequest(ModelState);
-        }
-
-
-        [Authorize]
-        [HttpPut("coupon")]
-        public ActionResult AddCouponToOrder(AddCouponModel req)
-        {
-            if (ModelState.IsValid)
-            {
-                if (_orderRepository.CheckStatusOrder(req.OrderId) == 0)
-                {
-                    if (CheckCouponOfUser(req.UserId, req.CouponId))
-                    {
-                        Order order = _orderRepository.Get(req.OrderId);
-                        if (order.UserId.Equals(req.UserId))
+                        Order order = _orderRepository.ConfirmOrder(req.OrderId, req.UserId);
+                        if (order != null)
                         {
                             Coupon coupon = _couponRepository.Get(req.CouponId);
                             if (coupon != null)
@@ -84,20 +53,13 @@ namespace Coffee_App.Controllers
                                         {
                                             if (order.TotalPrice >= coupon.Condition)
                                             {
-                                                if (coupon.Sale.Contains("%"))
-                                                {
-                                                    float discount = float.Parse(coupon.Sale.Split('%')[0]) / 100;
-                                                    order.TotalPrice = (int)(order.TotalPrice - (order.TotalPrice * discount));
-                                                }
-                                                else
-                                                {
-                                                    int discount = int.Parse(coupon.Sale);
-                                                    order.TotalPrice = order.TotalPrice - discount;
-                                                }
+                                                order.TotalPrice = req.TotalPrice;
                                                 order.CouponId = req.CouponId;
+                                                order.OrderTime = DateTime.Now;
+                                                order.Status = 1;
                                                 if (_orderRepository.SaveChanges() == 1)
                                                 {
-                                                    return Ok(JsonConvert.SerializeObject(new { totalPrice = order.TotalPrice }));
+                                                    return Ok();
                                                 }
                                                 return BadRequest(JsonConvert.SerializeObject(new { message = "Server Error." }));
                                             }
@@ -111,22 +73,77 @@ namespace Coffee_App.Controllers
                             }
                             return BadRequest(JsonConvert.SerializeObject(new { message = "The coupon not found." }));
                         }
-                        return BadRequest(JsonConvert.SerializeObject(new { message = "The order is not macth to user." }));
+                        return BadRequest(JsonConvert.SerializeObject(new { message = "The order is not match to user." }));
                     }
                     return BadRequest(JsonConvert.SerializeObject(new { message = "The coupon has been used." }));
-
                 }
-                return BadRequest(JsonConvert.SerializeObject(new { message = "The cart is done." }));
+                return BadRequest(JsonConvert.SerializeObject(new { message = "The order has done." }));
             }
             return BadRequest(ModelState);
-
         }
 
-        private bool CheckCouponOfUser(string userId, string couponId)
-        {
-            bool result = _orderRepository.CheckCounpoInOrder(userId, couponId);
-            return result;
-        }
+
+        /* [Authorize]
+         [HttpPut("coupon")]
+         public ActionResult AddCouponToOrder(AddCouponModel req)
+         {
+             if (ModelState.IsValid)
+             {
+                 if (_orderRepository.CheckStatusOrder(req.OrderId) == 0)
+                 {
+                     if (CheckCouponOfUser(req.UserId, req.CouponId))
+                     {
+                         Order order = _orderRepository.Get(req.OrderId);
+                         if (order.UserId.Equals(req.UserId))
+                         {
+                             Coupon coupon = _couponRepository.Get(req.CouponId);
+                             if (coupon != null)
+                             {
+                                 if (order.CouponId == null)
+                                 {
+                                     if (coupon.Status == 1)
+                                     {
+                                         if (coupon.ExpiryDate >= DateTime.Now)
+                                         {
+                                             if (order.TotalPrice >= coupon.Condition)
+                                             {
+                                                 if (coupon.Sale.Contains("%"))
+                                                 {
+                                                     float discount = float.Parse(coupon.Sale.Split('%')[0]) / 100;
+                                                     order.TotalPrice = (int)(order.TotalPrice - (order.TotalPrice * discount));
+                                                 }
+                                                 else
+                                                 {
+                                                     int discount = int.Parse(coupon.Sale);
+                                                     order.TotalPrice = order.TotalPrice - discount;
+                                                 }
+                                                 order.CouponId = req.CouponId;
+                                                 if (_orderRepository.SaveChanges() == 1)
+                                                 {
+                                                     return Ok(JsonConvert.SerializeObject(new { totalPrice = order.TotalPrice }));
+                                                 }
+                                                 return BadRequest(JsonConvert.SerializeObject(new { message = "Server Error." }));
+                                             }
+                                             return BadRequest(JsonConvert.SerializeObject(new { message = "The user is not eligible to receive the coupon." }));
+                                         }
+                                         return BadRequest(JsonConvert.SerializeObject(new { message = "The coupon has expired." }));
+                                     }
+                                     return BadRequest(JsonConvert.SerializeObject(new { message = "The coupon is unavailable." }));
+                                 }
+                                 return BadRequest(JsonConvert.SerializeObject(new { message = "The order can not take 2 coupons. " }));
+                             }
+                             return BadRequest(JsonConvert.SerializeObject(new { message = "The coupon not found." }));
+                         }
+                         return BadRequest(JsonConvert.SerializeObject(new { message = "The order is not macth to user." }));
+                     }
+                     return BadRequest(JsonConvert.SerializeObject(new { message = "The coupon has been used." }));
+
+                 }
+                 return BadRequest(JsonConvert.SerializeObject(new { message = "The cart is done." }));
+             }
+             return BadRequest(ModelState);
+
+         }*/
 
 
         [Authorize]
