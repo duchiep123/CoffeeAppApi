@@ -12,7 +12,7 @@ namespace Coffee_App.IRepositories
         int GetOrderIdByUserId(string userId);
         Order ConfirmOrder(int orderId, string userId);
         int CheckStatusOrder(int orderId);
-        bool CheckCounpoInOrder(string userId, string couponId);
+        bool CheckCouponInOrder(string userId, string couponId);
         Task<List<string>> GetListCouponIdInOrderOfUser(string userId);
     }
 }

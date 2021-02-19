@@ -37,7 +37,7 @@ namespace Coffee_App.Controllers
             {
                 if (_orderRepository.CheckStatusOrder(req.OrderId) == 0)
                 {
-                    if (_orderRepository.CheckCounpoInOrder(req.UserId, req.CouponId))
+                    if (_orderRepository.CheckCouponInOrder(req.UserId, req.CouponId))
                     {
                         Order order = _orderRepository.ConfirmOrder(req.OrderId, req.UserId);
                         if (order != null)

@@ -103,6 +103,7 @@ namespace Coffee_App.Controllers
                                 }
                                 return BadRequest(JsonConvert.SerializeObject(new { message = "Server Error." }));
                             }
+                            return BadRequest(JsonConvert.SerializeObject(new { message = "The order detail is not found." }));
                         }
                         return BadRequest(JsonConvert.SerializeObject(new { message = "The order is not macth to user." }));
                     }
@@ -170,8 +171,6 @@ namespace Coffee_App.Controllers
             }
             return -1;
         }
-
-
         [Authorize]
         [HttpGet("orderid/{id}")]
         public ActionResult GetListDetail(int id)
@@ -184,7 +183,7 @@ namespace Coffee_App.Controllers
                     int totalPrice = 0;
                     for (int i = 0; i < orderDetails.Count(); i++)
                     {
-                        totalPrice += orderDetails[i].UnitPrice;
+                        totalPrice += orderDetails[i].UnitPrice * orderDetails[i].Quantity;
                     }
                     return Ok(JsonConvert.SerializeObject(new { orderdetails = orderDetails, totalPrice, status = 1 }));
                 }

@@ -16,7 +16,7 @@ namespace Coffee_App.Repositories
 
         }
 
-        public bool CheckCounpoInOrder(string userId, string couponId)
+        public bool CheckCouponInOrder(string userId, string couponId)
         {
             Order order = (from o in _dbSet
                            where o.CouponId == couponId && o.UserId == userId
