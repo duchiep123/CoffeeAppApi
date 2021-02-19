@@ -183,7 +183,7 @@ namespace Coffee_App.Controllers
                     int totalPrice = 0;
                     for (int i = 0; i < orderDetails.Count(); i++)
                     {
-                        totalPrice += orderDetails[i].UnitPrice * orderDetails[i].Quantity;
+                        totalPrice += orderDetails[i].UnitPrice;
                     }
                     return Ok(JsonConvert.SerializeObject(new { orderdetails = orderDetails, totalPrice, status = 1 }));
                 }
