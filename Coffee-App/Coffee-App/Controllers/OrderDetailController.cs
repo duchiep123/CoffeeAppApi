@@ -178,10 +178,15 @@ namespace Coffee_App.Controllers
         {
             if (ModelState.IsValid)
             {
-                IQueryable<OrderDetail> orderDetails = _orderDetailRepository.GetOrderDetailsByOrderId(id);
+                List<OrderDetail> orderDetails = _orderDetailRepository.GetOrderDetailsByOrderId(id);
                 if (orderDetails != null)
                 {
-                    return Ok(JsonConvert.SerializeObject(new { orderdetails = orderDetails, status = 1 }));
+                    int totalPrice = 0;
+                    for (int i = 0; i < orderDetails.Count(); i++)
+                    {
+                        totalPrice += orderDetails[i].UnitPrice;
+                    }
+                    return Ok(JsonConvert.SerializeObject(new { orderdetails = orderDetails, totalPrice, status = 1 }));
                 }
                 return Ok(JsonConvert.SerializeObject(new { status = 0 }));
             }

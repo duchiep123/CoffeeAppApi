@@ -56,14 +56,14 @@ namespace Coffee_App.Repositories
             return orderDetail;
         }
 
-        public IQueryable<OrderDetail> GetOrderDetailsByOrderId(int orderId)
+        public List<OrderDetail> GetOrderDetailsByOrderId(int orderId)
         {
             IQueryable<OrderDetail> orderDetails = (from o in _dbSet
                                             where o.OrderId == orderId
                                             select o);
             if (orderDetails.Count() != 0)
             {
-                return orderDetails;
+                return orderDetails.ToList<OrderDetail>();
             }
             return null;
         }
