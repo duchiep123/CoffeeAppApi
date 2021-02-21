@@ -95,6 +95,7 @@ namespace Coffee_App
                     .AllowAnyHeader());
             });
             services.AddTransient<DbContext, CoffeeApplicationContext>();
+            services.AddScoped<IStoreRepository, StoreRepository>();
             services.AddScoped<ICouponRepository, CouponRepository>(); // thua` ke BaseRepository
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IProductSizeRepository, ProductSizeRepository>();
